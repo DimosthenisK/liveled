@@ -28,8 +28,8 @@ Open `http://127.0.0.1:8082` in Chrome or Edge. Web Bluetooth does not run over 
 
 ## CapRover
 
-The repository root has `captain-definition`. It builds `liveled-pwa/Dockerfile`, which serves the page with nginx on port 80. CapRover terminates HTTPS in front of that port.
+`liveled-pwa` is the app CapRover builds. `captain-definition` and `Dockerfile` sit in that directory, and the image serves the page with nginx on port 80. CapRover terminates HTTPS in front of that port.
 
 Create an app named `liveled`. Leave the container HTTP port at 80. Enable HTTPS, then force HTTPS. Web Bluetooth runs in Chrome or Edge only on that `https://` address, on a device that is next to the Pico.
 
-In the app's Deployment tab, set the repository to `github.com/DimosthenisK/liveled`, branch `main`, and your GitHub username. For a public repository the password can be any non-empty text. Save, copy the webhook CapRover shows, and add it to the GitHub repository: Settings, Webhooks, content type `application/json`, push events only. The next push to `main` builds and deploys the page.
+A push to `main` that changes `liveled-pwa` runs `.github/workflows/deploy.yml`. That packages `liveled-pwa` by itself and sends it to `https://captain.apps.dimosthenis.dev` with the app token in the `CAPROVER_APP_TOKEN` repository secret. The Dockerfile copies the page from the root of that package.

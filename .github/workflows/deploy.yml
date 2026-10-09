@@ -1,0 +1,20 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - liveled-pwa/**
+      - .github/workflows/deploy.yml
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: caprover/deploy-from-github@v2
+        with:
+          server: https://captain.apps.dimosthenis.dev
+          app: liveled
+          token: ${{ secrets.CAPROVER_APP_TOKEN }}
+          working-directory: liveled-pwa
