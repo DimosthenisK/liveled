@@ -4,7 +4,7 @@ A Pico app and a browser app that share one BLE session. The Pico advertises. Th
 
 ## Pico
 
-`liveled-pico/main.py` imports `ble` and `ws2812b`. On startup it clears the matrix and advertises as `LiveLED`. After a central connects, incoming packets fill 64 colors. The last packet unpacks them and lights the matrix.
+`liveled-pico/main.py` imports `ble`, `onboard_led`, and `ws2812b`. On startup it clears the matrix and advertises as `LiveLED`. The onboard LED turns on while a central is connected and turns off when that connection ends. Incoming packets fill 64 colors. The last packet unpacks them and lights the matrix.
 
 From `liveled-pico`. This attaches the shared Pico into WSL, then installs and runs:
 
@@ -12,7 +12,7 @@ From `liveled-pico`. This attaches the shared Pico into WSL, then installs and r
 ./run.sh
 ```
 
-That installs `ble` at `v0.2.0` from `github:DimosthenisK/pico-lib`, copies the local `ble` and `ws2812b` modules onto the board, then runs `main.py`. The data pin is GP16.
+That installs `ble` at `v0.2.0` from `github:DimosthenisK/pico-lib`, copies the local `ble`, `ws2812b`, and `onboard_led` modules onto the board, copies `main.py` to the board, then runs it. The data pin is GP16.
 
 A packet is `offset` as a little-endian uint16, `length`, `flags`, then `length` bytes. Bit 0 of `flags` marks the last packet. Bit 1 means the payload is the raw 192-byte color buffer. Otherwise the payload is run-length encoded and unpacks to those 192 bytes. Each LED is red, green, blue. The page sends the bottom row first, and each row right to left, so the canvas matches the panel. Each write carries at most 16 payload bytes. The Pico treats that write as a whole packet.
 

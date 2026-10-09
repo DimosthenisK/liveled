@@ -1,6 +1,7 @@
 import bluetooth
 
 from ble import Bluetooth
+from onboard_led import OnboardLED
 from ws2812b import WS2812B
 
 # 8x8 matrix, three bytes per LED: red, green, blue.
@@ -22,6 +23,7 @@ _LAST = 1
 _RAW = 2
 
 leds = WS2812B(DATA)
+led = OnboardLED()
 radio = Bluetooth()
 filled = 0
 comp = bytearray(FRAME)
@@ -115,5 +117,12 @@ try:
 except Exception as err:
     print("mtu", err)
 
+def connected(up):
+    if up:
+        led.on()
+    else:
+        led.off()
+
+
 print("advertising as LiveLED")
-radio.open(incoming, name="LiveLED")
+radio.open(incoming, name="LiveLED", on_connect=connected)
