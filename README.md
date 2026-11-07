@@ -26,10 +26,23 @@ python3 dev.py
 
 Open `http://127.0.0.1:8082` in Chrome or Edge. Web Bluetooth does not run over plain HTTP except on localhost. Connect, pick a color and a brightness, then draw. Brightness scales the colors sent to the LEDs. The canvas keeps the colors you painted. Each change starts a transfer. If a transfer is already running, later changes wait and the latest matrix is sent when the radio is free. A 250ms poll sends anything still waiting.
 
-## CapRover
+## Production (NixOS homeserver)
 
-`liveled-pwa` is the app CapRover builds. `captain-definition` and `Dockerfile` sit in that directory, and the image serves the page with nginx on port 80. CapRover terminates HTTPS in front of that port.
+Production runs on the homeserver GitOps repo (`DimosthenisK/nix-homeserver`), not CapRover.
 
-Create an app named `liveled`. Leave the container HTTP port at 80. Enable HTTPS, then force HTTPS. Web Bluetooth runs in Chrome or Edge only on that `https://` address, on a device that is next to the Pico.
+| URL | Scope |
+| --- | --- |
+| https://liveled.dimosthenis.dev | Public (Cloudflare Tunnel) |
+| https://liveled.afrino-macaroni.ts.net | Tailnet |
 
-A push to `main` that changes `liveled-pwa` runs `.github/workflows/deploy.yml`. That packages `liveled-pwa` by itself and sends it to CapRover. The repository secrets are `CAPROVER_SERVER`, `APP_NAME`, and `APP_TOKEN`. The Dockerfile copies the page from the root of that package.
+Stack path on the homeserver: `stacks/liveled/` (nginx image, loopback `127.0.0.1:8085`). Static assets are vendored from `liveled-pwa/` into that stack.
+
+To publish UI changes:
+
+1. Edit files under `liveled-pwa/`
+2. Copy them into `~/Projects/nix-homeserver/stacks/liveled/` (keep that stack’s `docker-compose.yml`)
+3. Commit and push `nix-homeserver` `main` (comin deploys), or run `sudo nixos-rebuild switch --flake ~/Projects/nix-homeserver#homeserver`
+
+Web Bluetooth needs HTTPS (or localhost) in Chrome/Edge, on a device next to the Pico.
+
+The `Dockerfile` + `nginx.conf` in `liveled-pwa/` remain for local image builds (`docker build -t liveled-pwa .`).
