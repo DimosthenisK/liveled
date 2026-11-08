@@ -28,21 +28,15 @@ Open `http://127.0.0.1:8082` in Chrome or Edge. Web Bluetooth does not run over 
 
 ## Production (NixOS homeserver)
 
-Production runs on the homeserver GitOps repo (`DimosthenisK/nix-homeserver`), not CapRover.
+Push `main` builds `liveled-pwa/` via `.github/workflows/deploy.yml`, publishes `ghcr.io/dimosthenisk/liveled:main`, then hits `https://deploy.dimosthenis.dev/deploy/liveled`. The homeserver stack is a thin compose file that pulls that image (loopback `127.0.0.1:8085`).
 
 | URL | Scope |
 | --- | --- |
 | https://liveled.dimosthenis.dev | Public (Cloudflare Tunnel) |
 | https://liveled.afrino-macaroni.ts.net | Tailnet |
 
-Stack path on the homeserver: `stacks/liveled/` (nginx image, loopback `127.0.0.1:8085`). Static assets are vendored from `liveled-pwa/` into that stack.
-
-To publish UI changes:
-
-1. Edit files under `liveled-pwa/`
-2. Copy them into `~/Projects/nix-homeserver/stacks/liveled/` (keep that stack’s `docker-compose.yml`)
-3. Commit and push `nix-homeserver` `main` (comin deploys), or run `sudo nixos-rebuild switch --flake ~/Projects/nix-homeserver#homeserver`
+Repo secret required: `DEPLOY_WEBHOOK_TOKEN`. Guide: https://github.com/DimosthenisK/homeserver-directory
 
 Web Bluetooth needs HTTPS (or localhost) in Chrome/Edge, on a device next to the Pico.
 
-The `Dockerfile` + `nginx.conf` in `liveled-pwa/` remain for local image builds (`docker build -t liveled-pwa .`).
+Local image: `docker build -t liveled-pwa liveled-pwa`.
